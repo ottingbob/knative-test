@@ -30,7 +30,7 @@ cluster-image:
 get-crds:
 	curl -o k8s/serving-crds.yaml -L https://github.com/knative/serving/releases/download/v0.21.0/serving-crds.yaml && \
 	curl -o k8s/serving-core.yaml -L https://github.com/knative/serving/releases/download/v0.21.0/serving-core.yaml && \
-	curl -o k8s/kourier.yaml -L https://github.com/knative/net-kourier/releases/download/v0.18.0/kourier.yaml && \
+	curl -o k8s/kourier.yaml -L https://github.com/knative/net-kourier/releases/download/v0.18.0/kourier.yaml
 
 apply-crds:
 	kubectl apply -f k8s/serving-crds.yaml && \
@@ -43,11 +43,17 @@ apply-crds:
 	kubectl --namespace kourier-system get service kourier && \
 	kubectl get pods --namespace knative-serving
 
+create-k8s:
+	kubectl apply -f k8s/service.yml
+
 verify-k8s:
 	kubectl get ksvc $(IMAGE_NAME) --output=custom-columns=NAME:.metadata.name,URL:.status.url
 
-# The value 10.43.56.61 will change based on the output of 
-# kubectl --namespace kourier-system get service kourier 
 curl-k8s:
+	kubectl -n kourier-system get service kourier -o json | jq -r .spec.clusterIP | \
 	kubectl run --restart Never --image=curlimages/curl:7.75.0 curly -- \
-		curl -H "Host: helloworld-python.default.example.com" 10.43.56.61
+		curl -H "Host: helloworld-python.default.example.com" $$(xargs)
+
+verify-curl-k8s:
+	kubectl logs -f curly
+
