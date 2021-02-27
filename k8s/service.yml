@@ -1,0 +1,18 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata: 
+  name: helloworld-python
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        client.knative.dev/user-image: dev.local/helloworld-python:0.0.1
+    spec:
+      containers:
+        - image: dev.local/helloworld-python:0.0.1
+          imagePullPolicy: Never
+          env:
+            - name: TARGET
+              value: "Python Sample v1"
+

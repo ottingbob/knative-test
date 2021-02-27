@@ -1,0 +1,14 @@
+# created by virtualenv automatically
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+bin
+include
+lib
+lib64
+pyvenv.cfg
+tags
+k8s/*
+!k8s/service.yml
+!k8s/hwpython.yaml
